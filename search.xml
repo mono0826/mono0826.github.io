@@ -35,7 +35,7 @@ href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
   <entry>
     <title>手把手教你搭建自己的博客</title>
     <url>/2024/01/08/%E6%89%8B%E6%8A%8A%E6%89%8B%E6%95%99%E4%BD%A0%E6%90%AD%E5%BB%BA%E8%87%AA%E5%B7%B1%E7%9A%84%E5%8D%9A%E5%AE%A2/</url>
-    <content><![CDATA[<p>本文主要讲述使用Hexo模板搭建自己的博客。</p>
+    <content><![CDATA[<p>本文主要讲述在window10系统上使用Hexo模板搭建自己的博客。</p>
 <span id="more"></span>
 <h2 id="一安装node.js软件">一、安装node.js软件</h2>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">nodejs.org download</span><br></pre></td></tr></table></figure>
@@ -50,7 +50,8 @@ href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
 <p>### 1、建立文件夹mono0826Blog &gt; win10用户： （1）f:，进入f盘
 （2）mkdir mono0826Blog，创建mono0826Blog文件夹 &gt; linux用户：
 直接在主目录下创建 mkdir mono0826Blog</p>
-<p>### 2、hexo init 初始化一个博客 ### 3、hexo s启动博客</p>
+<p>### 2、hexo init 初始化一个博客</p>
+<p>### 3、hexo s启动博客</p>
 <blockquote>
 <p>Hexo is running at http://localhost:4000/</p>
 </blockquote>
@@ -85,7 +86,7 @@ href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
 </blockquote>
 <h2 id="四博客页面优化">四、博客页面优化</h2>
 <h3 id="下载主题">1、下载主题</h3>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">git clone https://github.com/litten/hexo-theme-yilia.git themes/yilia</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">git clone https://github.com/next-theme/hexo-theme-next.git themes/next</span><br></pre></td></tr></table></figure>
 <h3 id="配置到自己的博客">2、配置到自己的博客</h3>
 <p>修改config.yml 找到themes，改为yilia</p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hexo clean </span><br><span class="line">hexo g</span><br><span class="line">hexo s</span><br></pre></td></tr></table></figure>
@@ -167,6 +168,11 @@ href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
 <img src="/2024/01/08/%E6%89%8B%E6%8A%8A%E6%89%8B%E6%95%99%E4%BD%A0%E6%90%AD%E5%BB%BA%E8%87%AA%E5%B7%B1%E7%9A%84%E5%8D%9A%E5%AE%A2/image-20240109151738584.png" class="" title="image-20240109151738584">
 <p>最后，</p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo g</span><br><span class="line">hexo s //本地查看</span><br><span class="line">//hexo d //上传到github上</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>参考文章：<a href="https://moeci.com/posts/hexo-typora/">Hexo +
+Typora + 开发Hexo插件 解决图片路径不一致 | yiyun's Blog
+(moeci.com)</a></p>
+</blockquote>
 ]]></content>
       <tags>
         <tag>Hexo</tag>
