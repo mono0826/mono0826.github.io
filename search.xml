@@ -147,6 +147,26 @@ href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
 <h3 id="博客内容链接为蓝色">10、博客内容链接为蓝色</h3>
 <p>在themes/next/source/css/_common/components/post/post-body.styl文件，将下面的代码复制到文件最后：</p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">.post-body p a{</span><br><span class="line">     color: #0593d3;</span><br><span class="line">     border-bottom: none;</span><br><span class="line">     &amp;:hover {</span><br><span class="line">       color: #0477ab;</span><br><span class="line">       text-decoration: underline;</span><br><span class="line">     }</span><br><span class="line">   }</span><br></pre></td></tr></table></figure>
+<h3 id="显示图片">11、显示图片</h3>
+<h4 id="安装插件">（1）安装插件</h4>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">cnpm install hexo-asset-img --save</span><br></pre></td></tr></table></figure>
+<p>安装这个插件之后，使用终端新建博客文章时，会附带产生一个文件夹（在bolg/source/_posts目录下），用来存储改篇博客的照片</p>
+<img src="/2024/01/08/%E6%89%8B%E6%8A%8A%E6%89%8B%E6%95%99%E4%BD%A0%E6%90%AD%E5%BB%BA%E8%87%AA%E5%B7%B1%E7%9A%84%E5%8D%9A%E5%AE%A2/image-20240109152028553.png" class="" title="image-20240109152028553">
+<h4 id="更改hexo-asset-img目录下的index.js文件">（2）更改hexo-asset-img目录下的index.js文件</h4>
+<blockquote>
+<p>路径为：blog_modules-asset-image</p>
+</blockquote>
+<p>将index.js内容全部替换为：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">const log = require('hexo-log')({ 'debug': false, 'slient': false });</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * md文件返回 true</span><br><span class="line"> * @param {*} data </span><br><span class="line"> */</span><br><span class="line">function ignore(data) {</span><br><span class="line">    // TODO: 好奇怪，试了一下, md返回true, 但却需要忽略 取反!</span><br><span class="line">    var source = data.source;</span><br><span class="line">    var ext = source.substring(source.lastIndexOf('.')).toLowerCase();</span><br><span class="line">    return ['md',].indexOf(ext) &gt; -1;</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line">function action(data) {</span><br><span class="line">    var reverseSource = data.source.split("").reverse().join("");</span><br><span class="line">    var fileName = reverseSource.substring(3, reverseSource.indexOf("/")).split("").reverse().join("");</span><br><span class="line"></span><br><span class="line">    // ![example](postname/example.jpg)  --&gt;  {% asset_img example.jpg example %}</span><br><span class="line">    var regExp = RegExp("!\\[(.*?)\\]\\(" + fileName + '/(.+?)\\)', "g");</span><br><span class="line">    // hexo g</span><br><span class="line">    data.content = data.content.replace(regExp, "{% asset_img $2 $1 %}", "g");</span><br><span class="line"></span><br><span class="line">    // log.info(`hexo-asset-img: filename: ${fileName}, title: ${data.title.trim()}`);</span><br><span class="line"></span><br><span class="line">    return data;</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line">hexo.extend.filter.register('before_post_render', (data) =&gt; {</span><br><span class="line">    if (!ignore(data)) {</span><br><span class="line">        action(data)</span><br><span class="line">    }</span><br><span class="line">}, 0);</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h4 id="更改typora图片路径">（3）更改typora图片路径</h4>
+<blockquote>
+<p>为避免typora与博客文章路径不一致问题，对typora做以下更改</p>
+</blockquote>
+<img src="/2024/01/08/%E6%89%8B%E6%8A%8A%E6%89%8B%E6%95%99%E4%BD%A0%E6%90%AD%E5%BB%BA%E8%87%AA%E5%B7%B1%E7%9A%84%E5%8D%9A%E5%AE%A2/image-20240109151644251.png" class="" title="image-20240109151644251">
+<p>然后复制到.md文件中，可以看到图片路径以及变成相对路径（<strong>如果没有改变的话，将软件关闭，重新打开即可</strong>）</p>
+<img src="/2024/01/08/%E6%89%8B%E6%8A%8A%E6%89%8B%E6%95%99%E4%BD%A0%E6%90%AD%E5%BB%BA%E8%87%AA%E5%B7%B1%E7%9A%84%E5%8D%9A%E5%AE%A2/image-20240109151738584.png" class="" title="image-20240109151738584">
+<p>最后，</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo g</span><br><span class="line">hexo s //本地查看</span><br><span class="line">//hexo d //上传到github上</span><br></pre></td></tr></table></figure>
 ]]></content>
       <tags>
         <tag>Hexo</tag>
