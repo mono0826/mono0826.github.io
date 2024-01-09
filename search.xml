@@ -1,6 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Hello World</title>
+    <url>/2024/01/08/hello-world/</url>
+    <content><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very
+first post. Check <a href="https://hexo.io/docs/">documentation</a> for
+more info. If you get any problems when using Hexo, you can find the
+answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or
+you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
+<span id="more"></span>
+<h2 id="quick-start">Quick Start</h2>
+<h3 id="create-a-new-post">Create a new post</h3>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
+<h3 id="run-server">Run server</h3>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p>
+<h3 id="generate-static-files">Generate static files</h3>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p>
+<h3 id="deploy-to-remote-sites">Deploy to remote sites</h3>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
+]]></content>
+      <tags>
+        <tag>Hexo</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>手把手教你搭建自己的博客</title>
     <url>/2024/01/08/%E6%89%8B%E6%8A%8A%E6%89%8B%E6%95%99%E4%BD%A0%E6%90%AD%E5%BB%BA%E8%87%AA%E5%B7%B1%E7%9A%84%E5%8D%9A%E5%AE%A2/</url>
     <content><![CDATA[<p>本文主要讲述使用Hexo模板搭建自己的博客。</p>
@@ -87,10 +114,7 @@
 <p>（2）在blog目录下的config.yml末尾输入</p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 显示阅读时间</span><br><span class="line">symbols_count_time:</span><br><span class="line"># 每篇文章显示</span><br><span class="line">  symbols: true</span><br><span class="line">  time: true</span><br><span class="line"># 文章底部显示</span><br><span class="line">  total_symbols: false</span><br><span class="line">  total_time: false</span><br><span class="line"># 是否统计代码块</span><br><span class="line">  exclude_codeblock: false</span><br><span class="line">  awl: 2    </span><br><span class="line">  wpm: 275</span><br><span class="line">  suffix: "mins."</span><br></pre></td></tr></table></figure>
 <p>结果为：</p>
-<figure>
-<img src="/.io//image-20240108190512463.png" alt="image-20240108190512463">
-<figcaption aria-hidden="true">image-20240108190512463</figcaption>
-</figure>
+<img src="/.io//01/08/%E6%89%8B%E6%8A%8A%E6%89%8B%E6%95%99%E4%BD%A0%E6%90%AD%E5%BB%BA%E8%87%AA%E5%B7%B1%E7%9A%84%E5%8D%9A%E5%AE%A2/image-20240108190512463.png" class title="image-20240108190512463">
 <h3 id="显示搜索功能">5、显示搜索功能</h3>
 <p>终端输入</p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">cnpm install hexo-generator-searchdb</span><br></pre></td></tr></table></figure>
@@ -121,33 +145,6 @@
 <h3 id="博客内容链接为蓝色">10、博客内容链接为蓝色</h3>
 <p>在themes/next/source/css/_common/components/post/post-body.styl文件，将下面的代码复制到文件最后：</p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">.post-body p a{</span><br><span class="line">     color: #0593d3;</span><br><span class="line">     border-bottom: none;</span><br><span class="line">     &amp;:hover {</span><br><span class="line">       color: #0477ab;</span><br><span class="line">       text-decoration: underline;</span><br><span class="line">     }</span><br><span class="line">   }</span><br></pre></td></tr></table></figure>
-]]></content>
-      <tags>
-        <tag>Hexo</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Hello World</title>
-    <url>/2024/01/08/hello-world/</url>
-    <content><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very
-first post. Check <a href="https://hexo.io/docs/">documentation</a> for
-more info. If you get any problems when using Hexo, you can find the
-answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or
-you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<span id="more"></span>
-<h2 id="quick-start">Quick Start</h2>
-<h3 id="create-a-new-post">Create a new post</h3>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="run-server">Run server</h3>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="generate-static-files">Generate static files</h3>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="deploy-to-remote-sites">Deploy to remote sites</h3>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
 ]]></content>
       <tags>
         <tag>Hexo</tag>
