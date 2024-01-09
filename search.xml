@@ -84,7 +84,7 @@
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">在终端输入</span><br><span class="line">hexo g</span><br><span class="line">hexo s</span><br></pre></td></tr></table></figure>
 <p>即可看到</p>
 <figure>
-<img src="/mono0826/mono0826.github.io/mono0826/mono0826.github/image-20240108190121244.png" alt="文章末尾显示本文结束">
+<img src="/mono0826/.com//image-20240108190121244.png" alt="文章末尾显示本文结束">
 <figcaption aria-hidden="true">文章末尾显示本文结束</figcaption>
 </figure>
 <h3 id="显示文字总数和阅读时间">4、显示文字总数和阅读时间</h3>
@@ -94,7 +94,7 @@
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 显示阅读时间</span><br><span class="line">symbols_count_time:</span><br><span class="line"># 每篇文章显示</span><br><span class="line">  symbols: true</span><br><span class="line">  time: true</span><br><span class="line"># 文章底部显示</span><br><span class="line">  total_symbols: false</span><br><span class="line">  total_time: false</span><br><span class="line"># 是否统计代码块</span><br><span class="line">  exclude_codeblock: false</span><br><span class="line">  awl: 2    </span><br><span class="line">  wpm: 275</span><br><span class="line">  suffix: "mins."</span><br></pre></td></tr></table></figure>
 <p>结果为：</p>
 <figure>
-<img src="/mono0826/mono0826.github.io/mono0826/mono0826.github/image-20240108190512463.png" alt="显示文字总数和阅读时间">
+<img src="/mono0826/.com//image-20240108190512463.png" alt="显示文字总数和阅读时间">
 <figcaption aria-hidden="true">显示文字总数和阅读时间</figcaption>
 </figure>
 <h3 id="显示搜索功能">5、显示搜索功能</h3>
