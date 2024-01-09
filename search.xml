@@ -109,10 +109,7 @@ href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 文章末尾添加“本文结束”标记</span><br><span class="line">passage_end_tag:</span><br><span class="line">  enabled: true</span><br></pre></td></tr></table></figure>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">在终端输入</span><br><span class="line">hexo g</span><br><span class="line">hexo s</span><br></pre></td></tr></table></figure>
 <p>即可看到</p>
-<figure>
-<img src="image-20240108190121244.png" alt="文章末尾显示本文结束">
-<figcaption aria-hidden="true">文章末尾显示本文结束</figcaption>
-</figure>
+<img src="/2024/01/08/%E6%89%8B%E6%8A%8A%E6%89%8B%E6%95%99%E4%BD%A0%E6%90%AD%E5%BB%BA%E8%87%AA%E5%B7%B1%E7%9A%84%E5%8D%9A%E5%AE%A2/image-20240108190121244.png" class="" title="image-20240108190121244">
 <h3 id="显示文字总数和阅读时间">4、显示文字总数和阅读时间</h3>
 <p>（1）在终端输入</p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">cnpm install hexo-symbols-count-time</span><br><span class="line">cnpm install hexo-word-counter</span><br></pre></td></tr></table></figure>
