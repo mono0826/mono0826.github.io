@@ -2,13 +2,13 @@
 <search>
   <entry>
     <title>Hello World</title>
-    <url>/mono0826/2024/01/09/Hello-World/</url>
+    <url>/2024/01/09/Hello-World/</url>
     <content><![CDATA[
 ]]></content>
   </entry>
   <entry>
     <title>手把手教你搭建自己的博客</title>
-    <url>/mono0826/2024/01/08/%E6%89%8B%E6%8A%8A%E6%89%8B%E6%95%99%E4%BD%A0%E6%90%AD%E5%BB%BA%E8%87%AA%E5%B7%B1%E7%9A%84%E5%8D%9A%E5%AE%A2/</url>
+    <url>/2024/01/08/%E6%89%8B%E6%8A%8A%E6%89%8B%E6%95%99%E4%BD%A0%E6%90%AD%E5%BB%BA%E8%87%AA%E5%B7%B1%E7%9A%84%E5%8D%9A%E5%AE%A2/</url>
     <content><![CDATA[<p>本文主要讲述使用Hexo模板搭建自己的博客。</p>
 <span id="more"></span>
 <h2 id="一安装node.js软件">一、安装node.js软件</h2>
@@ -84,7 +84,7 @@
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">在终端输入</span><br><span class="line">hexo g</span><br><span class="line">hexo s</span><br></pre></td></tr></table></figure>
 <p>即可看到</p>
 <figure>
-<img src="/mono0826/.com//image-20240108190121244.png" alt="文章末尾显示本文结束">
+<img src="/.com//image-20240108190121244.png" alt="文章末尾显示本文结束">
 <figcaption aria-hidden="true">文章末尾显示本文结束</figcaption>
 </figure>
 <h3 id="显示文字总数和阅读时间">4、显示文字总数和阅读时间</h3>
@@ -94,7 +94,7 @@
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 显示阅读时间</span><br><span class="line">symbols_count_time:</span><br><span class="line"># 每篇文章显示</span><br><span class="line">  symbols: true</span><br><span class="line">  time: true</span><br><span class="line"># 文章底部显示</span><br><span class="line">  total_symbols: false</span><br><span class="line">  total_time: false</span><br><span class="line"># 是否统计代码块</span><br><span class="line">  exclude_codeblock: false</span><br><span class="line">  awl: 2    </span><br><span class="line">  wpm: 275</span><br><span class="line">  suffix: "mins."</span><br></pre></td></tr></table></figure>
 <p>结果为：</p>
 <figure>
-<img src="/mono0826/.com//image-20240108190512463.png" alt="显示文字总数和阅读时间">
+<img src="/.com//image-20240108190512463.png" alt="显示文字总数和阅读时间">
 <figcaption aria-hidden="true">显示文字总数和阅读时间</figcaption>
 </figure>
 <h3 id="显示搜索功能">5、显示搜索功能</h3>
