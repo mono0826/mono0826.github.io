@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.loli.net/css?family=Noto+Serif+SC:300,300italic,400,400italic,700,700italic%7CLobster+Two:300,300italic,400,400italic,700,700italic%7CEB+Garamond:300,300italic,400,400italic,700,700italic%7CSource+Code+Pro:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha256-yIDrPSXHZdOZhAqiBP7CKzIwMQmRCJ8UeB8Jo17YC4o=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"mono0826.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.19.1","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="代码 论文 Abstract 匹配 2D 范围扫描是许多定位和建图算法的基本组成部分。大多数扫描匹配算法需要查找所使用特征（即点或线）之间的对应关系。我们提出了一种范围扫描的替代表示，即正态分布变换(Normal Distributions Transform) 。与占用网格类似，我们将 2D 平面细分为单元(cell)。对于每个单元格，我们分配一个正态分布，该分布对测量点的概率进行">
+<meta property="og:type" content="article">
+<meta property="og:title" content="正态分布变换：激光扫描匹配的新方法">
+<meta property="og:url" content="https://mono0826.github.io/2024/01/10/%E6%AD%A3%E6%80%81%E5%88%86%E5%B8%83%E5%8F%98%E6%8D%A2%EF%BC%9A%E6%BF%80%E5%85%89%E6%89%AB%E6%8F%8F%E5%8C%B9%E9%85%8D%E7%9A%84%E6%96%B0%E6%96%B9%E6%B3%95/index.html">
+<meta property="og:site_name" content="Study Home">
+<meta property="og:description" content="代码 论文 Abstract 匹配 2D 范围扫描是许多定位和建图算法的基本组成部分。大多数扫描匹配算法需要查找所使用特征（即点或线）之间的对应关系。我们提出了一种范围扫描的替代表示，即正态分布变换(Normal Distributions Transform) 。与占用网格类似，我们将 2D 平面细分为单元(cell)。对于每个单元格，我们分配一个正态分布，该分布对测量点的概率进行">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://mono0826.github.io/2024/01/10/%E6%AD%A3%E6%80%81%E5%88%86%E5%B8%83%E5%8F%98%E6%8D%A2%EF%BC%9A%E6%BF%80%E5%85%89%E6%89%AB%E6%8F%8F%E5%8C%B9%E9%85%8D%E7%9A%84%E6%96%B0%E6%96%B9%E6%B3%95/image-20240110132116071.png">
+<meta property="og:image" content="https://mono0826.github.io/2024/01/10/%E6%AD%A3%E6%80%81%E5%88%86%E5%B8%83%E5%8F%98%E6%8D%A2%EF%BC%9A%E6%BF%80%E5%85%89%E6%89%AB%E6%8F%8F%E5%8C%B9%E9%85%8D%E7%9A%84%E6%96%B0%E6%96%B9%E6%B3%95/image-20231227211748138.png">
+<meta property="article:published_time" content="2024-01-10T05:17:24.000Z">
+<meta property="article:modified_time" content="2024-01-10T05:37:13.100Z">
+<meta property="article:author" content="一只睡虫">
+<meta property="article:tag" content="NDT">
+<meta property="article:tag" content="2D Lidar SLAM">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://mono0826.github.io/2024/01/10/%E6%AD%A3%E6%80%81%E5%88%86%E5%B8%83%E5%8F%98%E6%8D%A2%EF%BC%9A%E6%BF%80%E5%85%89%E6%89%AB%E6%8F%8F%E5%8C%B9%E9%85%8D%E7%9A%84%E6%96%B0%E6%96%B9%E6%B3%95/image-20240110132116071.png">
+
+
+<link rel="canonical" href="https://mono0826.github.io/2024/01/10/%E6%AD%A3%E6%80%81%E5%88%86%E5%B8%83%E5%8F%98%E6%8D%A2%EF%BC%9A%E6%BF%80%E5%85%89%E6%89%AB%E6%8F%8F%E5%8C%B9%E9%85%8D%E7%9A%84%E6%96%B0%E6%96%B9%E6%B3%95/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://mono0826.github.io/2024/01/10/%E6%AD%A3%E6%80%81%E5%88%86%E5%B8%83%E5%8F%98%E6%8D%A2%EF%BC%9A%E6%BF%80%E5%85%89%E6%89%AB%E6%8F%8F%E5%8C%B9%E9%85%8D%E7%9A%84%E6%96%B0%E6%96%B9%E6%B3%95/","path":"2024/01/10/正态分布变换：激光扫描匹配的新方法/","title":"正态分布变换：激光扫描匹配的新方法"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>正态分布变换：激光扫描匹配的新方法 | Study Home</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Study Home</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">my study home</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-首页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-分类"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">12</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#abstract"><span class="nav-number">1.</span> <span class="nav-text">Abstract</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#introduction"><span class="nav-number">2.</span> <span class="nav-text">1 Introduction</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#previous-work"><span class="nav-number">3.</span> <span class="nav-text">2 Previous work</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#the-normal-distributions-transform"><span class="nav-number">4.</span> <span class="nav-text">3 The Normal Distributions
+Transform</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#scan-alignment"><span class="nav-number">5.</span> <span class="nav-text">4 Scan Alignment</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#optimization-using-newtons-algorithm"><span class="nav-number">6.</span> <span class="nav-text">5 optimization using
+Newton&#39;s algorithm</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#position-tracking"><span class="nav-number">7.</span> <span class="nav-text">6 Position Tracking</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#application-to-slam"><span class="nav-number">8.</span> <span class="nav-text">7 Application to SLAM</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#a.-localizing-with-respect-to-multiple-scans"><span class="nav-number">8.1.</span> <span class="nav-text">A. Localizing with
+respect to multiple scans</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#b.-adding-a-new-keyframe-and-optimizing-the-map"><span class="nav-number">8.2.</span> <span class="nav-text">B. Adding a new
+keyframe and optimizing the map</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#conclusion-and-future-work"><span class="nav-number">9.</span> <span class="nav-text">8 Conclusion and Future work</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="一只睡虫"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">一只睡虫</p>
+  <div class="site-description" itemprop="description">a sleepyhead</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">12</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/mono0826" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;mono0826" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://space.bilibili.com/688268580/article" title="bilibili → https:&#x2F;&#x2F;space.bilibili.com&#x2F;688268580&#x2F;article" rel="noopener me" target="_blank"><i class="fab fa-bilibili fa-fw"></i>bilibili</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://mono0826.github.io/2024/01/10/%E6%AD%A3%E6%80%81%E5%88%86%E5%B8%83%E5%8F%98%E6%8D%A2%EF%BC%9A%E6%BF%80%E5%85%89%E6%89%AB%E6%8F%8F%E5%8C%B9%E9%85%8D%E7%9A%84%E6%96%B0%E6%96%B9%E6%B3%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="一只睡虫">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Study Home">
+      <meta itemprop="description" content="a sleepyhead">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="正态分布变换：激光扫描匹配的新方法 | Study Home">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          正态分布变换：激光扫描匹配的新方法
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2024-01-10 13:17:24 / 修改时间：13:37:13" itemprop="dateCreated datePublished" datetime="2024-01-10T13:17:24+08:00">2024-01-10</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E4%BC%A0%E7%BB%9FSLAM/" itemprop="url" rel="index"><span itemprop="name">传统SLAM</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>4.9k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>18 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><img src="/2024/01/10/%E6%AD%A3%E6%80%81%E5%88%86%E5%B8%83%E5%8F%98%E6%8D%A2%EF%BC%9A%E6%BF%80%E5%85%89%E6%89%AB%E6%8F%8F%E5%8C%B9%E9%85%8D%E7%9A%84%E6%96%B0%E6%96%B9%E6%B3%95/image-20240110132116071.png" class="" title="image-20240110132116071">
+<p><a target="_blank" rel="noopener" href="https://github.com/hibikid39/ndt_slam">代码</a> <a
+target="_blank" rel="noopener" href="https://www.researchgate.net/publication/4045903_The_Normal_Distributions_Transform_A_New_Approach_to_Laser_Scan_Matching">论文</a></p>
+<h2 id="abstract">Abstract</h2>
+<p>匹配 2D
+范围扫描是许多定位和建图算法的基本组成部分。大多数扫描匹配算法需要查找所使用特征（即点或线）之间的对应关系。我们提出了一种范围扫描的替代表示，即正态分布变换<em>(Normal
+Distributions Transform)</em> 。与占用网格类似，我们将 2D
+平面细分为单元<em>(cell)</em>。对于每个单元格，我们分配一个正态分布，该分布对测量点的概率进行局部建模。变换的结果是一个分段连续且可微的概率密度，可用于匹配使用牛顿算法的另一次扫描。因此，不必建立明确的对应关系。我们详细介绍了该算法，并展示了该算法在相对位置跟踪和同步定位和地图构建（SLAM）中的应用。真实数据的初步结果表明，即使不使用里程计数据，该算法也能够可靠、实时地绘制<strong>未经修改</strong>的室内环境。</p>
+<span id="more"></span>
+<h2 id="introduction">1 Introduction</h2>
+<p>毋庸置疑，同步定位与建图（SLAM）是移动机器人系统的基本能力。激光测距扫描仪是获得所需输入的常用传感器，主要是因为它们在各种情况下具有高可靠性和低噪声。许多
+SLAM
+算法都基于匹配两个范围扫描或将范围扫描与地图匹配的能力。在这里，我们提出了一种用于扫描匹配的低级任务的新方法，并展示了我们如何使用它来构建地图。</p>
+<p>本文的主要目的是介绍<strong>正态分布变换</strong>（以下称为<em>NDT</em>）及其应用于一个扫描与另一个扫描或一个扫描与多个其他扫描的匹配。<em>NDT</em>
+将从单次扫描重建的离散 2D 点集转换为在 2D
+平面上定义的分段连续和可微概率密度。该概率密度由一组正态分布组成，可以很容易地计算出来。然后，将第二次扫描与<em>NDT</em>相匹配定义为最大化总和，即第二次扫描的对齐点在此密度上得分。</p>
+<p>我们还提出了一种用于SLAM问题的简单算法，该算法非常适合我们的匹配方案。然而，所提出的匹配方案并不依赖于该算法。出于这个原因，我们只回顾了第二部分相关工作中关于匹配两个扫描的方法，而不是像Thrun[15]或Gutmann[6]那样构建整个地图的方法。然而，这种方法的一个组成部分是感知模型，即给定地图和姿态估计的单次扫描的可能性。由于我们的方法恰好为这种模型生成了度量，我们相信，我们的扫描匹配器也可以集成到更复杂的
+SLAM 算法中。</p>
+<p>本文的其余部分组织如下： 第三部分介绍<em>NDT</em>,
+第四部分概述了扫描匹配方法，并定义了将扫描与<em>NDT</em>进行比较的度量，该测量在第五节中使用牛顿算法进行了优化。扫描匹配器应用于第六节中的位置跟踪和第七节中的简单SLAM方法。最后，我们展示了一些真实数据的结果，并对未来的工作进行了展望。</p>
+<h2 id="previous-work">2 Previous work</h2>
+<p><strong>匹配两个范围扫描的目的是找到进行扫描的两个位置之间的相对位姿</strong>。大多数成功算法的基础是在两次扫描的基元<em>(primitives)</em>之间建立对应关系。由此，可以推导出误差度量并最小化。Cox使用点作为基元，并将它们与线匹配，这些线是在先验模型中给出的[3]。在Amos项目[7]中，这些线是从扫描中提取的。Gutmann将从扫描中提取的线与模型中的线进行匹配[8]。最通用的方法，即点对点的匹配，是由
+Lu 和 Milios [9] 引入的。这本质上是应用于激光扫描匹配的
+ICP（<em>(Irerated Closest
+Point迭代最近点</em>）算法（[1]、[2]、[18]）的变体。 我们与 Lu 和 Milios
+分享了我们的建图策略，与 [10]
+中一样，我们没有构建显式<em>map</em>，而是使用一组选定的扫描及其恢复的位姿作为隐式<em>map</em>。</p>
+<p>在所有这些方法中，都必须建立明确的对应关系。在这一点上，我们的方法有所不同，因为我们不需要在基元<em>(primitives)</em>之间建立对应关系，还有其他方法可以避免解决相应问题。在[12]中，Mojaev将局部极地占用网格<em>(local
+polar occupancy
+grids)</em>的相关性与概率里程计模型相结合，用于姿态确定（使用激光扫描仪和声纳）。Weiss和Puttkammer
+[17]使用角度直方图<em>(angular
+histograms)</em>来恢复两个位姿之间的旋转。然后，使用找到最常见方向后计算的
+x 和 y
+直方图来恢复平移。这种方法可以通过使用第二个主要方向来扩展[7]。</p>
+<p>我们的工作也受到计算机视觉技术的启发。如果将概率密度一词替换为图像强度，则我们的NDT与特征跟踪<em>(feature
+tracking)</em> [13] 或全景图<em>(composing of panoramas)</em>[14]
+的组成具有相似的结构。这些技术使用每个相关位置的图像梯度来估计参数。这里使用正态分布的导数。与图像梯度相反，这些梯度可以通过分析计算。</p>
+<h2 id="the-normal-distributions-transform">3 The Normal Distributions
+Transform</h2>
+<p>本节介绍单次激光扫描的正态分布变换
+（NDT）。这是本文的核心贡献。使用NDT进行位置跟踪和SLAM（在以下各节中描述）相对简单。</p>
+<p>NDT 通过一组局部正态分布对一次激光扫描的所有重建 2D
+点的分布进行建模。首先，机器人周围的二维空间被有规律地细分为大小恒定的单元。然后，对于每个包含至少三个点的单元格，将执行以下操作：</p>
+<p>（1）收集所有的2D点<span
+class="math inline">\(x_{i=1...n}\)</span>放在一个box中</p>
+<p>（2）计算均值<span class="math inline">\(q=1/n \sum _i
+x_i\)</span></p>
+<p>（3）计算协方差矩阵<span class="math inline">\(\Sigma={1\over
+n}{\sum}_{i}({\bf x}_{\bf i}-{\bf q})({\bf x}_{\bf i}-{\bf
+q})^{t}\)</span></p>
+<p>在<em>cell</em>中的一个2D点<span
+class="math inline">\(x\)</span>的测量模型建模为<em>正态分布</em><span
+class="math inline">\(N=(q,\Sigma)\)</span>: <span
+class="math display">\[
+p({\bf x})\sim \exp(-{({\bf x}-{\bf q})^{t}\Sigma^{-1}({\bf x}-{\bf
+q})\over 2})
+\]</span> 与占用网格类似，NDT
+建立了平面的规则细分。但是，占用网格表示<em>cell</em>被占用的概率，而<em>NDT</em>表示测量<em>cell</em>内每个位置的样本的概率。我们使用
+100 cm x 100 cm 的<em>cell</em>大小。</p>
+<p>这种表示有什么用？现在，我们以概率密度的形式对二维平面进行了分段连续和可微分的描述，在展示示例之前，我们必须注意两个实现细节。</p>
+<p>为了尽量减少离散化的影响，我们决定使用四个重叠的网格。也就是说，一个边长<span
+class="math inline">\(l\)</span>的网格首先放置单个<em>cell</em>，然后在水平方向上移动<span
+class="math inline">\(\frac{l}{2}\)</span>放置第二个<em>cell</em>，在竖直方向上移动$
+<span
+class="math inline">\(放置第三个，最后是在水平和竖直方向移动\)</span>$放置第四个。现在，每个
+2D
+点都落入四个<em>cell</em>中。本文的其余部分不会明确考虑这一点，我们将描述我们的算法，就好像每个点只有一个<em>cell</em>一样，因此，如果计算一个点的概率密度，则是在默契的情况下完成的，即评估所有四个<em>cells</em>的密度并总结结果。</p>
+<p>第二个问题是，对于噪声测量的世界线，协方差矩阵将变得奇异并且不能反演，在实践中，协方差矩阵有时会接近奇异。为了防止这种影响，我们检查<span
+class="math inline">\(\Sigma\)</span>最小<em>(smaller)</em>的特征值<em>(eigenvalue)</em>是否是最大<em>(larger)</em>特征值的
+0.001 倍。否则，将其设置为此值（<span class="math inline">\(0.001 \cdot
+larger\)</span>）。</p>
+<p>下一节将介绍如何使用此变换来对齐两个激光扫描。</p>
+<h2 id="scan-alignment">4 Scan Alignment</h2>
+<p>两个机器人坐标系之间的坐标系变换<span
+class="math inline">\(T\)</span>由下式给出: <span
+class="math display">\[
+T:\binom{x&#39;}{y&#39;} =\begin{pmatrix}
+  cos \phi &amp;-sin \phi  \\
+  sin \phi &amp;cos \phi
+\end{pmatrix} \binom{x}{y}+\binom{t_x}{t_y}
+\]</span> <span
+class="math inline">\((t_x,t_y)^t\)</span>表示平移，<span
+class="math inline">\(\phi\)</span>表示两帧之间的旋转。扫描对齐的目标是使用在两个位置得到的激光扫描来恢复这些参数。给定两次扫描（第一次和第二次扫描），所提出的方法的概要如下：</p>
+<p>（1）构建第一次扫描的 NDT。</p>
+<p>（2）初始化参数的估计值（按零或使用里程计数据）。</p>
+<p>（3）对于第二次扫描的每个样本：根据参数将重建的 2D
+点映射到第一次扫描的坐标系中。</p>
+<p>（4）确定每个映射点的相应正态分布。</p>
+<p>（5）参数的分数<em>(score)</em>是通过计算每个地图点的分布并对结果求和来确定的。</p>
+<p>（6）通过尝试优化分数来计算新的参数估计值。这是通过执行牛顿算法的来完成的。</p>
+<p>（7）转到（3），直到满足收敛条件。</p>
+<p>前四个步骤很简单：
+构建NDT在上一节中进行了描述。如上所述，里程计数据可用于初始化估计值。<em>Mapping</em>第二次扫描是使用<span
+class="math inline">\(T\)</span>找到相应的正态分布是在NDT的网格中进行的简单查找。</p>
+<p>现在使用以下表示详细描述其余部分：</p>
+<ul>
+<li><p><span
+class="math inline">\(p=(p_i)^t_{i=1...3}=(t_x,t_y,\phi)^t\)</span>:该向量表示需要估计的参数</p></li>
+<li><p><span
+class="math inline">\(x_i\)</span>:表示在第二次扫描的坐标系中需要重建激光扫描2D点<span
+class="math inline">\(i\)</span>。</p></li>
+<li><p><span class="math inline">\(x_i&#39;\)</span>:表示<span
+class="math inline">\(x_i\)</span>通过坐标变换到第一帧的2D点，<span
+class="math inline">\(x_i&#39;=T(x_i,p)\)</span></p></li>
+<li><p><span
+class="math inline">\(\Sigma_i,q_i\)</span>:协方差矩阵和在第一帧寻找得到的正态分布的均值</p></li>
+</ul>
+<p>因为NDT已经得到了一张概率地图，对于第一帧激光点云的NDT数据，用点<span
+class="math inline">\(x_i&#39;\)</span>对应正态分布的协方差矩阵和均值。
+<span class="math display">\[
+score(p)=\sum_{i}^{}exp(\frac{-(x_i&#39;-q_i)^t
+\Sigma_{i}^{-1}(x_i&#39;-q_i) }{2} )
+\]</span> 此分数将在下一节中进行优化。</p>
+<blockquote>
+<p>类似于求解Ax=b，b代表上一帧的数据，A代表下一帧的数据，x代表两帧之间的变换</p>
+</blockquote>
+<h2 id="optimization-using-newtons-algorithm">5 optimization using
+Newton's algorithm</h2>
+<p>由于优化问题通常被描述为最小化问题，因此我们将采用此约定的符号。因此，本节中要最小化的函数是分数。牛顿算法迭代查找参数<span
+class="math inline">\(p=(p_i)^t\)</span>，最小化函数<span
+class="math inline">\(f\)</span>.每次迭代求解以下方程： <span
+class="math display">\[
+H \Delta p=-g
+\]</span> <span class="math inline">\(g\)</span>是<span
+class="math inline">\(f\)</span>对位姿<span
+class="math inline">\(p\)</span>的梯度 <span class="math display">\[
+g_{i}={\partial f\over \partial p_{i}}
+\]</span> <span class="math inline">\(H\)</span>是<span
+class="math inline">\(f\)</span>的<em>Hession</em>矩阵 <span
+class="math display">\[
+H_{ij}={\partial f\over \partial p_{i}\partial p_{j}}
+\]</span> 这个线性系统的解是一个增量<span class="math inline">\(\Delta
+p\)</span>，将其添加到当前估计值中： <span class="math display">\[
+p\longleftarrow p+\Delta p
+\]</span> 如果<span class="math inline">\(H\)</span>是正定的，<span
+class="math inline">\(f(p)\)</span>会朝着<span
+class="math inline">\(\Delta p\)</span>方向减小.如果不是这种情况，<span
+class="math inline">\(H\)</span>替换为<span
+class="math inline">\(H′=H+λI\)</span>，对<span
+class="math inline">\(λ\)</span>进行选择，保证<span
+class="math inline">\(H′\)</span>是正定的。有关最小化算法本身的实际细节，例如在[4]中可以找到。</p>
+此算法现在应用于函数-<em>score</em>。梯度和 Hessian 是通过收集<span
+class="math inline">\(eq(3)\)</span>
+的所有求和的偏导数来构建的。为了缩短符号并避免混淆参数编号<span
+class="math inline">\(i\)</span>以及激光扫描样品的索引<span
+class="math inline">\(i\)</span>） 索引<span
+class="math inline">\(i\)</span>对于样本编号被丢弃。此外，我们编写 <span
+class="math display">\[
+q=x_i&#39;-q_i
+\]</span> 可以很容易地验证，偏导数<span
+class="math inline">\(q\)</span>关于<span
+class="math inline">\(p\)</span>等于<span
+class="math inline">\(x_i\)</span>偏导数。对分数求和可以写为： <span
+class="math display">\[
+s=-exp(\frac{-q^t \Sigma^{-1}q}{2})
+\]</span> 梯度（使用链式法则） <span class="math display">\[
+\eqalignno{\tilde{g}_{i} =-{\partial s\over \partial p_{i}}=-{\partial
+s\over \partial q}{\partial q\over \partial p_{i}}\cr {\bf q}^{\bf
+t}\Sigma^{-1}{\partial q\over \partial p_{i}}\exp{-{\bf q}^{\bf
+t}\Sigma^{-1}{\bf q}\over 2}}
+\]</span> <span class="math inline">\(p_i\)</span>关于<span
+class="math inline">\(q\)</span>的偏导（根据<span
+class="math inline">\(eq(2)\)</span>） <span class="math display">\[
+J_T=\begin{pmatrix}
+  1&amp;  0&amp;-xsin\phi-ycos\phi \\
+  0&amp;  1&amp;xcos\phi-ysin\phi
+\end{pmatrix}
+\]</span> <em>Hession</em>矩阵为 <span class="math display">\[
+\eqalignno{&amp;\quad \tilde{H}_{ij}=-{\partial s\over \partial
+p_{i}\partial {\bf p}_{j}}=-\exp{-{\bf q}^{\bf t}\Sigma^{-1}{\bf q}\over
+2}\cr &amp; \qquad((-{\bf q}^{\bf t}\Sigma^{-1}{\partial {\bf q}\over
+\partial p_{i}})(-{\bf q}^{\bf t} \Sigma^{-1}{\partial {\bf q}\over
+\partial p_{j}})+\cr &amp; ({\bf q}^{\bf t}\Sigma^{-1}{\partial^{2} {\bf
+q}\over \partial p_{i}\partial p_{j}}）+(-{\partial {\bf q}^{\bf t}\over
+\partial p_{j}}\Sigma^{-1}{\partial {\bf q}\over \partial p_{i}}))}
+\]</span> <span class="math inline">\(q\)</span>的二阶导数： $$
+<span class="math display">\[\begin{aligned}
+\frac{\partial ^2p}{\partial p_i\partial p_j}=\left\{\begin{matrix}
+\begin{pmatrix}
+-xcos\phi +ysin\phi \\-xsin\phi -ycos\phi
+
+\end{pmatrix} i=j=3
+\\\begin{pmatrix}
+0 \\
+0
+\end{pmatrix}otherwise
+
+\end{matrix}\right.
+\end{aligned}\]</span>
+<p>$$ 从这些方程可以看出，构建梯度和 <span
+class="math inline">\(Hessian\)</span>
+的计算成本很低。每个点只有一次对指数函数的调用和少量的乘法。三角函数仅依赖于<span
+class="math inline">\(\phi\)</span>（角度的当前估计值），因此每次迭代只能调用一次。接下来的两节现在将使用此算法进行位置跟踪和
+SLAM。</p>
+<h2 id="position-tracking">6 Position Tracking</h2>
+<p>本节介绍如何应用扫描匹配算法来跟踪给定时间的当前位置<span
+class="math inline">\(t=t_{start}\)</span>.然后，下一节将此方法扩展到
+SLAM。</p>
+<p>全局参考坐标系此时由本地机器人坐标系定义。相应的激光扫描在下文中称为<em>关键帧</em>。针对此关键帧执行跟踪。在时间<span
+class="math inline">\(t_k\)</span>，则该算法执行以下步骤：</p>
+<img src="/2024/01/10/%E6%AD%A3%E6%80%81%E5%88%86%E5%B8%83%E5%8F%98%E6%8D%A2%EF%BC%9A%E6%BF%80%E5%85%89%E6%89%AB%E6%8F%8F%E5%8C%B9%E9%85%8D%E7%9A%84%E6%96%B0%E6%96%B9%E6%B3%95/image-20231227211748138.png" class="" title="image-20231227211748138">
+<p>决定是否扫描仍然足够接近是基于一个简单的经验标准，该标准涉及关键帧与当前帧之间的平移和角距离以及最终的分数。为了便于位置跟踪，该算法必须实时执行：在1.4
+GHz机器上构建扫描的NDT需要大约10个IDS。对于扫描之间的小动作，优化算法通常需要大约
+1-5 次迭代（很少超过 10 次）。一次迭代大约需要 2
+毫秒，因此实时性没有问题。</p>
+<h2 id="application-to-slam">7 Application to SLAM</h2>
+<p>我们将地图定义为关键帧及其全局姿态的集合。本节介绍如何针对此地图进行定位，以及如何在机器人到达未知区域时扩展和优化此地图。</p>
+<h3 id="a.-localizing-with-respect-to-multiple-scans">A. Localizing with
+respect to multiple scans</h3>
+<p>在地图中，进行第<span
+class="math inline">\(i\)</span>次扫描，角度<span
+class="math inline">\(\phi_i\)</span>（或旋转矩阵<span
+class="math inline">\(R_i\)</span>） 和平移向量<span
+class="math inline">\((t_x,t_y)_i^t=T_i\)</span>是相互关联的。这些描述了在全局坐标系中，第<span
+class="math inline">\(i\)</span>次扫描的位姿。当前的机器人姿态由旋转矩阵<span
+class="math inline">\(R\)</span>和平移向量<span
+class="math inline">\(T\)</span>，<span
+class="math inline">\(T&#39;\)</span>表示从机器人坐标系到第<span
+class="math inline">\(i\)</span>次扫描坐标系的位姿，由下式给出： <span
+class="math display">\[
+T&#39;:\binom{x&#39;}{y&#39;} =R_i^t(R \binom{x}{y}+T-T_i
+\]</span> 只需稍作改动即可使第五节的算法适应这种情况。第<span
+class="math inline">\(i\)</span>次扫描的2D 点的通过<span
+class="math inline">\(T&#39;\)</span>计算.此外，<span
+class="math inline">\(T&#39;\)</span>的雅可比矩阵和二偏导数稍微复杂一些。</p>
+雅可比由下式给出： <span class="math display">\[
+{\bf J}_{\bf T ^ \prime}={\bf R}_{\bf i}^{t}{\bf J}_{\bf T}
+\]</span> 二阶偏导数： $$
+<span class="math display">\[\begin{aligned}
+\frac{\partial ^2x&#39;}{\partial p_i\partial p_j}=\left\{\begin{matrix}
+R_i^t\begin{pmatrix}
+-xcos\phi +ysin\phi \\-xsin\phi -ycos\phi
+
+\end{pmatrix} i=j=3
+\\\begin{pmatrix}
+0 \\
+0
+\end{pmatrix}otherwise
+
+\end{matrix}\right.
+\end{aligned}\]</span>
+<p>$$ 优化算法的梯度和 Hessian
+可以通过对所有重叠扫描求和来构建。但是我们找到了一种替代方案，它速度更快，并且产生同样好的结果：对于在机器人位置拍摄的每个扫描样本，确定扫描，其中评估概率密度的结果最大。此示例和当前小版本仅使用此扫描。这样，构建梯度和优化算法的
+Hessian 所需的操作与重叠关键帧的数量无关，除了找到上述最大值。</p>
+<h3 id="b.-adding-a-new-keyframe-and-optimizing-the-map">B. Adding a new
+keyframe and optimizing the map</h3>
+<p>在每个时间步长中，地图由一组关键帧组成，这些关键帧在全局坐标系中的位置。如果当前扫描与地图的重叠太小，则地图将通过上次成功匹配的扫描进行扩展。然后，将每个重叠扫描分别与新关键帧匹配，从而产生两次扫描之间的相对姿态。维护一个图形，其中包含成对匹配结果的信息。</p>
+<p>在此图中，每个关键帧都由一个节点表示。节点保存全局坐标系中关键帧姿态的估计值。两个节点之间的边表示相应的扫描已成对匹配，并保持两者之间的相对姿态。两次扫描。</p>
+<p>添加新关键帧后，通过优化针对所有关键帧参数定义的误差函数来优化地图。成对配准的结果用于定义每个匹配对的二次误差模型，如下所示：
+两次扫描的全局参数还定义了两次扫描之间的相对姿态。让<span
+class="math inline">\(Δp\)</span>是由全局参数定义的相对姿态与由成对匹配结果定义的相对姿态之间的差值。然后，我们将这两次扫描的分数作为<span
+class="math inline">\(Δp\)</span>的函数，使用二次模型： <span
+class="math display">\[
+s{\rm core}^{\prime}(\Delta p)= {\rm score} +{1\over 2}(\Delta
+p)^{t}{\bf H}(\Delta p)
+\]</span> 分数是最终分数，当成对匹配收敛时和<span
+class="math inline">\(H\)</span>是由此获得的
+<em>Hessian</em>。该模型在<span
+class="math inline">\(δp=0\)</span>处进行二阶泰勒展开，请注意，线性项缺失，因为我们扩展了一个极值点。现在，此分数已对所有边进行求和并进行了优化。</p>
+<p>如果关键帧的数量太多，则无法再在实时条件下执行此最小化（自由变量的数量为<span
+class="math inline">\(3N−3\)</span>，其中 $N
+$是关键帧数）。因此，我们只在地图的子图上进行优化。该子图是通过收集所有关键帧来构建的，这些关键帧可以通过遍历不超过三条边从新关键帧的节点到达。我们现在仅针对属于此子图中包含的关键帧的参数优化上面的误差函数。当然，如果必须关闭一个循环，我们将不得不对所有关键帧进行优化。</p>
+<h2 id="conclusion-and-future-work">8 Conclusion and Future work</h2>
+<p>我们提出了范围扫描的新表示形式:正态分布变换
+（NDT）。此转换可用于派生用于匹配另一个扫描的分析表达式。我们还展示了如何将我们的扫描匹配器用于位置跟踪问题和SLAM问题。我们方法的主要优点是：</p>
+<ul>
+<li>无需在点或特征之间建立明确的对应关系。由于这是大多数方法中最容易出错的部分，因此我们在没有对应关系的情况下更加健壮。</li>
+<li>导数可以分析计算。这既快速又正确。</li>
+</ul>
+<p>问题当然是：一切都能通过局部正态分布建模得足够好吗？</p>
+<p>到目前为止，我们的测试是在室内环境中进行的，这从来都不是问题。计划在不太结构化的环境中进行进一步的测试，最好是在户外。我们还打算系统地将我们的方法收敛半径与Lu和Milios的方法进行比较。</p>
+
+    </div>
+
+    
+    
+    
+
+
+
+
+<div>
+    
+    <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">------ 本文结束------</div>
+    
+</div>
+
+    
+ </div>
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/NDT/" rel="tag"><i class="fa fa-tag"></i> NDT</a>
+              <a href="/tags/2D-Lidar-SLAM/" rel="tag"><i class="fa fa-tag"></i> 2D Lidar SLAM</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024/01/10/%E5%9F%BA%E4%BA%8EBIM%E7%9A%842D-LiDAR%E5%AE%9A%E4%BD%8D%E5%9C%A8%E5%8F%98%E5%8C%96%E5%92%8C%E5%8A%A8%E6%80%81%E7%8E%AF%E5%A2%83%E4%B8%AD%E5%AE%9E%E7%8E%B0%E7%BB%88%E8%BA%AB%E5%AE%A4%E5%86%85%E5%AF%BC%E8%88%AA%E7%9A%84%E9%B2%81%E6%A3%92%E6%80%A7/" rel="prev" title="基于BIM的2D LiDAR定位在变化和动态环境中实现终身室内导航的鲁棒性">
+                  <i class="fa fa-angle-left"></i> 基于BIM的2D LiDAR定位在变化和动态环境中实现终身室内导航的鲁棒性
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2024/01/10/python-%E5%85%A5%E9%97%A8/" rel="next" title="python 入门">
+                  python 入门 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">一只睡虫</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/next-theme-pjax/0.6.0/pjax.min.js" integrity="sha256-vxLn1tSKWD4dqbMRyv940UYw4sXgMtYcK6reefzZrao=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script><script src="/js/pjax.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.6.1/mermaid.min.js","integrity":"sha256-mm3Re3y7xlvh+yCD+l/Zs1d+PU0AEad93MkWvljfm/s="}}</script>
+  <script src="/js/third-party/tags/mermaid.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #333;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #eee;
+      background-image: linear-gradient(#fcfcfc, #eee);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+  
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('复制').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('/n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('复制')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"log":false,"model":{"jsonPath":"/live2dw/assets/hijiki.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":true}});</script></body>
+</html>
